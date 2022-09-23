@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.WishMapper">
+<insert id="insert" parameterType="com.tedu.wxadmin.model.Wish">
+insert into wish(quesid,source,uno) values(#{quesid},#{source},#{uno});
+</insert>
+<select id="findwish" parameterType="com.tedu.wxadmin.model.Wish" resultType="java.lang.Integer">
+select count(*) from wish where quesid=#{quesid} and source=#{source} and uno=#{uno};
+</select>
+<delete id="deletewish" parameterType="com.tedu.wxadmin.model.Wish">
+delete from wish where quesid=#{quesid} and source=#{source} and uno=#{uno};
+ALTER TABLE wish AUTO_INCREMENT = 1; 
+
+</delete>
+</mapper>

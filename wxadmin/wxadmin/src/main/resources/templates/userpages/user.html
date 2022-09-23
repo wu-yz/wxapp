@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+  <title>研题吧后台</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" th:href="@{/layui/css/layui.css}"  media="all">
+	<script th:src="@{/layui/layui.js}" charset="utf-8"></script>
+</head>
+<body>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+    <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+    <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+	<button class="layui-btn layui-btn-sm" lay-event="adduser">添加</button>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+var $;
+//加载表格模块
+layui.use('table', function(){
+  var table = layui.table;//获取table对象
+  $=layui.jquery;
+  //渲染表格
+  table.render({
+    elem: '#test'
+    ,url:'/userpages/listJson'
+    ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+    ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。 
+      title: '提示'
+      ,layEvent: 'LAYTABLE_TIPS'
+      ,icon: 'layui-icon-tips'
+    }]
+    ,title: '用户数据表'
+    ,cols: [
+    	[
+      {type: 'checkbox', fixed: 'left'}
+      //,{field:'uid', title:'id', width:80}
+      ,{field:'uno', title:'账号', width:120}//, width:80, fixed: 'left', unresize: true, sort: true}
+      ,{field:'uname', title:'用户名'}//, width:120
+      //,{field:'uemail', title:'邮箱'}
+      ,{field:'upwd', title:'密码'}
+     //,{field:'email', title:'邮箱', width:150, edit: 'text', templet: function(res){
+      //  return '<em>'+ res.email +'</em>'
+      //}}
+      //,{field:'sex', title:'性别', width:80, edit: 'text', sort: true}
+      //,{field:'city', title:'城市', width:100}
+      //,{field:'experience', title:'积分', width:80, sort: true}
+      //,{field:'ip', title:'IP', width:120}
+      //,{field:'logins', title:'登入次数', width:100, sort: true}
+      //,{field:'joinTime', title:'加入时间', width:120}
+      ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:200}
+    ]
+    	]
+    ,page: true,//分页
+    limits:[7,8,9,10]
+  });
+  
+  //头工具栏事件
+  table.on('toolbar(test)', function(obj){
+    var checkStatus = table.checkStatus(obj.config.id);
+    switch(obj.event){
+      case 'getCheckData':
+        var data = checkStatus.data;
+        layer.alert(JSON.stringify(data));
+      break;
+      case 'getCheckLength':
+        var data = checkStatus.data;
+        layer.msg('选中了：'+ data.length + ' 个');
+      break;
+      case 'isAll':
+        layer.msg(checkStatus.isAll ? '全选': '未全选');
+      break;
+      case 'adduser':
+    	  //layer.msg('弹出添加页面');
+    	  parent.layer.open({
+    		  type:2,//2:跳转到页面
+    		  offset:"auto",
+    		  title:"添加用户",
+    		  content:"/userpages/adduser",
+    		  area:["1000px","600px"],
+    		  btn:"关闭全部",
+    		  btnAlign:"c",
+    		  yes:function(){
+    			  parent.layer.closeAll();
+    		  }
+    	  });
+    	  break;
+      
+      //自定义头工具栏右侧图标 - 提示
+      case 'LAYTABLE_TIPS':
+        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+      break;
+    };
+  });
+  
+  //监听行工具事件
+  table.on('tool(test)', function(obj){
+    var data = obj.data;
+    var no = obj.data.uno;
+    if(obj.event === 'del'){
+      layer.confirm('真的删除行么', function(index){
+        obj.del();//删除对应行的DOM结构，更新缓存
+        layer.close(index);
+        //向服务端发送删除指令
+        $.get("/userpages/deleteuser",{uno:no},function(respData){
+        	console.log(respData);
+        	if(respData.success==1){
+        		layer.msg("删除成功");
+        	}else{
+        		layer.msg("删除失败");
+        	}
+        })
+      });
+    } else if(obj.event === 'edit'){
+    	//弹出编辑页面
+    	parent.layer.open({
+    		  type:2,//2:跳转到页面
+    		  offset:"auto",
+    		  title:"修改用户信息",
+    		  content:"/userpages/updateuser?uno="+no,
+    		  area:["1000px","600px"],
+    		  btn:"关闭",
+    		  btnAlign:"c",
+    		  yes:function(){
+    			  parent.layer.closeAll();
+    		  }
+    	  });
+      //layer.prompt({
+      //  formType: 2
+       // ,value: data.email
+      //}, function(value, index){
+      //  obj.update({
+      //    email: value
+      //  });
+      //  layer.close(index);
+      //});
+    }
+  });
+  
+ /* table.on('rowDouble(test)',function(obj){
+	  var no=obj.data.bankno;
+	  alert(no);
+	  parent.layer.open({
+    		  type:2,//2:跳转到页面
+    		  offset:"auto",
+    		  title:"题库详情",
+    		  content:"/bankpages/detail?bankno="+no,
+    		  area:["1000px","500px"],
+    		  btn:"关闭全部",
+    		  btnAlign:"c",
+    		  yes:function(){
+    			  parent.layer.closeAll();
+    		  }
+    	  })
+  });*/
+});
+</script>
+</body>
+</html>

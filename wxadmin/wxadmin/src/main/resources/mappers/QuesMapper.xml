@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.QuesMapper">
+<sql id="search_where">
+<where>
+<if test="condition.bankid!=0">
+and bankid='${condition.bankid}'
+</if>
+<if test="condition.chapter!=null and condition.chapter!=''">
+and chapter='${condition.chapter}'
+</if>
+</where>
+
+</sql>
+<select id="findCountByMap" parameterType="map" resultType="java.lang.Integer"> 
+ 	select count(*) from question
+ 	<include refid="search_where"></include>
+</select>
+
+<select id="findQuesByMap" parameterType="map" resultType="com.tedu.wxadmin.model.question">
+		select * from question 
+		<include refid="search_where"></include>
+		limit #{start},#{pageSize};
+</select>
+<select id="findByQid" parameterType="java.lang.Integer" resultType="com.tedu.wxadmin.model.question">
+	select * from question where quesNo=#{qno};
+</select>
+<select id="findQuesByContent" parameterType="java.lang.String" resultType="com.tedu.wxadmin.model.question">
+select * from question where content=#{content}
+
+</select>
+<insert id="insert" parameterType="com.tedu.wxadmin.model.question">
+insert into question(quesType,chapter,content,ans,aoption,boption,coption,doption,analysis,bankid) 
+values(#{quesType},#{chapter},#{content},#{ans},#{aoption},#{boption},#{coption},#{doption},#{analysis},#{bankid});
+</insert>
+
+<update id="update" parameterType="com.tedu.wxadmin.model.question">
+update question set quesType=#{quesType},content=#{content},chapter=#{chapter},ans=#{ans},aoption=#{aoption},
+boption=#{boption},coption=#{coption},doption=#{doption},analysis=#{analysis}
+where quesNo=#{quesNo}
+</update>
+
+<delete id="deleteByQid" parameterType="java.lang.Integer">
+delete from question where quesNo = #{qno};
+<!--对自增列进行重新排序
+(换了个更有用的方法，原来直接粗暴的把整列删除再重新添加，因为后来设了外键，语句操作不了)
+alter table question drop quesNo;
+alter table question ADD quesNo int NOT NULL first;
+alter table question MODIFY COLUMN quesNo int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(quesNo);
+-->
+alter table question AUTO_INCREMENT = 1;
+
+</delete>
+
+<!-- 批量 -->
+<insert id="addBatchQues">
+        insert into question(quesType,chapter,content,ans,aoption,boption,coption,doption,analysis,bankid) values 
+        <foreach collection="quesList" item="item" separator=",">
+          (#{item.quesType},#{item.chapter},#{item.content},#{item.ans},#{item.aoption},#{item.boption},#{item.coption}
+          ,#{item.doption},#{item.analysis},#{item.bankid})
+        </foreach>
+</insert>
+
+
+<update id="updateQuesById">
+        update question set quesType = #{quesType},chapter=#{chapter},content = #{content},ans = #{ans},aoption = #{aoption},
+        boption=#{boption},coption=#{coption},doption=#{doption},analysis=#{analysis},bankid=#{bankid}
+        where quesNo = #{quesNo}
+</update>
+
+<!--                   小程序                                                      -->
+<select id="findchapterlist" parameterType="java.lang.Integer" resultType="com.tedu.wxadmin.model.question" >
+select distinct bankid,chapter from question where bankid=#{bno};
+</select>
+<select id="count" parameterType="map" resultType="java.lang.Integer">
+	select count(*) from question where bankid=#{bid} and chapter=#{chapter};
+</select>
+<select id="quesByChapId" parameterType="map" resultType="com.tedu.wxadmin.model.question">
+		select * from question where bankid=#{bid} and chapter=#{chapter};
+</select>
+<select id="countwrong" parameterType="java.lang.String" resultType="java.lang.Integer" >
+select count(*) from question,testwrong 
+where testwrong.uno=#{userno} and question.quesNo=testwrong.quesno 
+</select>
+<select id="showwrong" parameterType="java.lang.String" resultType="com.tedu.wxadmin.model.question">
+select * from question,testwrong 
+where testwrong.uno=#{userno} and question.quesNo=testwrong.quesno 
+</select>
+<select id="countwish" parameterType="map" resultType="java.lang.Integer">
+select count(*) from question,wish where wish.source=#{source} and wish.uno=#{uno} and question.quesNo=wish.quesid
+</select>
+<select id="findtestwish" parameterType="map" resultType="com.tedu.wxadmin.model.question">
+select * from question,wish where wish.source=#{source} and wish.uno=#{uno} and question.quesNo=wish.quesid
+</select>
+</mapper>

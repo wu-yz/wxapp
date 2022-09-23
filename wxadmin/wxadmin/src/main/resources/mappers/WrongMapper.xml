@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.WrongMapper">
+<insert id="insert" parameterType="com.tedu.wxadmin.model.Testwrong">
+	insert into testwrong(uno,quesno,selected) values(#{uno},#{quesno},#{selected});
+</insert>
+<select id="findCount" parameterType="com.tedu.wxadmin.model.Testwrong" resultType="java.lang.Integer">
+select count(*) from testwrong where uno=#{uno} and quesno=#{quesno};
+</select>
+<update id="update" parameterType="com.tedu.wxadmin.model.Testwrong">
+update testwrong set selected=#{selected}
+where quesno=#{quesno} and uno=#{uno}
+</update>
+
+<!-- 真题 -->
+<select id="findewrong" parameterType="com.tedu.wxadmin.model.Examwrong" resultType="java.lang.Integer">
+select count(*) from examwrong where uno=#{uno} and id=#{id};
+</select>
+<update id="updateEwrong" parameterType="com.tedu.wxadmin.model.Examwrong">
+update examwrong set selected = #{selected}
+where id = #{id} and uno = #{uno}
+</update>
+<insert id="insertEwrong" parameterType="com.tedu.wxadmin.model.Examwrong">
+insert into examwrong(uno,id,selected) values(#{uno},#{id},#{selected});
+</insert>
+
+</mapper>

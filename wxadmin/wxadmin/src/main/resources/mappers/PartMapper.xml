@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.PartMapper">
+<!-- 真题集的一些数据库操作 -->
+<select id="findCountByMap" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from part;
+</select>
+
+<select id="findPartByMap" parameterType="map" resultType="com.tedu.wxadmin.model.part">
+		select * from part order by partNo asc limit #{start},#{pageSize}
+</select>
+
+<select id="queryList" resultType="com.tedu.wxadmin.model.part">
+select * from part;
+</select>
+
+<insert id="insert" parameterType="com.tedu.wxadmin.model.part">
+insert into part(partName) values(#{partName});
+</insert>
+
+<select id="findPartById" parameterType="java.lang.Integer" resultType="com.tedu.wxadmin.model.part">
+select * from part where partNo=#{partNo};
+</select>
+
+<update id="update" parameterType="com.tedu.wxadmin.model.part">
+update part set partName=#{partName} 
+where partNo=#{partNo}
+</update>
+<!--         删除                                   -->
+<delete id="delete" parameterType="java.lang.Integer">
+	delete from part where partNo = #{partNo};
+	 <!--对自增列进行重新排序
+	 alter table part drop partNo;
+     alter table part ADD partNo int NOT NULL first;
+     alter table part MODIFY COLUMN bankNo int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(partNo);
+	 -->
+     ALTER TABLE part AUTO_INCREMENT = 1;
+</delete>
+
+<!--         真题题目的一些操作~~            -->
+
+<select id="findNumByMap" parameterType="map" resultType="java.lang.Integer">
+	select count(*) from partdetail;
+</select>
+<select id="findDPartByMap" parameterType="map" resultType="com.tedu.wxadmin.model.partdetail">
+	select * from partdetail order by id asc limit #{start},#{pageSize}
+</select>
+<select id="findById" parameterType="java.lang.Integer" resultType="com.tedu.wxadmin.model.partdetail">
+	select * from partdetail where id=#{id};
+</select>
+<select id="findByContent" parameterType="java.lang.String" resultType="com.tedu.wxadmin.model.partdetail">
+select * from partdetail where content=#{content};
+</select>
+<insert id="insertdetail" parameterType="com.tedu.wxadmin.model.partdetail">
+insert into partdetail(type,content,ans,aoption,boption,coption,doption,analysis,partNo) 
+values(#{type},#{content},#{ans},#{aoption},#{boption},#{coption},#{doption},#{analysis},#{partNo});
+</insert>
+<update id="updatedetail" parameterType="com.tedu.wxadmin.model.partdetail">
+update partdetail set type=#{type},content=#{content},ans=#{ans},aoption=#{aoption},boption=#{boption},
+coption=#{coption},doption=#{doption},analysis=#{analysis}
+where id=#{id};
+</update>
+<delete id="deleteById" parameterType="java.lang.Integer">
+delete from partdetail where id = #{id};
+ALTER TABLE partdetail AUTO_INCREMENT = 1;
+</delete>
+
+<!-- 批量 -->
+<insert id="addBatchPart">
+        insert into partdetail(type,content,ans,aoption,boption,coption,doption,analysis,partNo) values 
+        <foreach collection="list" item="item" separator=",">
+          (#{item.type},#{item.content},#{item.ans},#{item.aoption},#{item.boption},#{item.coption}
+          ,#{item.doption},#{item.analysis},#{item.partNo})
+        </foreach>
+</insert>
+
+
+<update id="updateById">
+        update partdetail set type=#{type},content = #{content},ans = #{ans},aoption = #{aoption},
+        boption=#{boption},coption=#{coption},doption=#{doption},analysis=#{analysis}
+        where id = #{id}
+</update>
+
+<!--          下面是前端的操作                   -->
+<select id="findPartResult" resultType="com.tedu.wxadmin.model.part">
+select * from part;
+</select>
+<select id="count" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+select count(*) from partdetail where partNo=#{pno};
+</select>
+<select id="findByPno" parameterType="java.lang.Integer" resultType="com.tedu.wxadmin.model.partdetail">
+select * from partdetail where partNo=#{pno};
+</select>
+<select id="countwish" parameterType="map" resultType="java.lang.Integer">
+select count(*) from partdetail,wish where wish.source=#{source} and wish.uno=#{uno} and partdetail.id=wish.quesid
+</select>
+<select id="findstar" parameterType="map" resultType="com.tedu.wxadmin.model.partdetail">
+select * from partdetail,wish where wish.source=#{source} and wish.uno=#{uno} and partdetail.id=wish.quesid
+</select>
+<select id="countwrong" parameterType="java.lang.String" resultType="java.lang.Integer">
+select count(*) from partdetail,examwrong where examwrong.uno=#{userno} and partdetail.id=examwrong.id
+</select>
+<select id="showwrong" parameterType="java.lang.String" resultType="com.tedu.wxadmin.model.partdetail">
+select * from partdetail,examwrong where examwrong.uno=#{userno} and partdetail.id=examwrong.id
+</select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.EDetailMapper">
+<select id="finddetail" parameterType="com.tedu.wxadmin.model.examdetail" resultType="java.lang.Integer">
+select count(*) from examdetail where uno=#{uno} and examname=#{examname} and rightnum=#{rightnum};
+</select>
+<update id="updatedetail" parameterType="com.tedu.wxadmin.model.examdetail">
+update examdetail set rightnum = #{rightnum}
+where examname = #{examname} and uno = #{uno}
+</update>
+<insert id="insertdetail" parameterType="com.tedu.wxadmin.model.examdetail">
+insert into examdetail(uno,examname,rightnum) values(#{uno},#{examname},#{rightnum});
+</insert>
+<select id="count" parameterType="java.lang.String" resultType="java.lang.Integer">
+select count(*) from examdetail where uno=#{uno};
+</select>
+<select id="findAllByUno" parameterType="java.lang.String" resultType="com.tedu.wxadmin.model.examdetail">
+select * from examdetail where uno=#{uno}; 
+</select>
+</mapper>

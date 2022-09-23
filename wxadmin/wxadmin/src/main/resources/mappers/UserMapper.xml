@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.UserMapper">
+<select id="findCountByMap" parameterType="map" resultType="java.lang.Integer"> 
+ 	select count(*) from user;
+</select>
+<select id="findCountByUno" parameterType="java.lang.String" resultType="java.lang.Integer">
+select count(*) from user where uno=#{uno}
+</select>
+<!--        登录             -->
+ <select id="selectUser" parameterType="com.tedu.wxadmin.model.user" resultType="com.tedu.wxadmin.model.user">
+ 	select * from user where uno=#{uno} and upwd=#{upwd}
+ </select>
+<!--        注册             -->
+<insert id="register" parameterType="com.tedu.wxadmin.model.user">
+insert into user(uno,uname,upwd) values(#{uno},#{uname},#{upwd});
+</insert>
+<!--               -->
+<select id="findUserByMap" parameterType="map" resultType="com.tedu.wxadmin.model.user">
+		select * from user limit #{start},#{pageSize};
+</select>
+<select id="findByUno" parameterType="java.lang.String" resultType="com.tedu.wxadmin.model.user">
+	select * from user where uno=#{id}
+</select>
+<!-- <resultMap id="findUserByMap" type="com.tedu.wxadmin.model.user" >
+		<id column="uno" property="userno" />
+		<result column="uname" property="username" />
+		<result column="uemail" property="useremail" />
+		<result column="upwd" property="userpwd"/>
+</resultMap> -->
+<insert id="insertuser" parameterType="com.tedu.wxadmin.model.user" >
+	insert into user(uno,uname,upwd) values(#{uno},#{uname},#{upwd}); 
+</insert>
+<delete id="deleteByNo" parameterType="java.lang.String">
+delete from user where uno = #{uno};
+alter table user AUTO_INCREMENT = 1;
+<!--对自增列进行重新排序
+alter table user drop uid;
+ alter table user ADD uid int NOT NULL first;
+ alter table user MODIFY COLUMN uid int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(uid);
+-->
+ 
+</delete>
+<update id="updateuser" parameterType="com.tedu.wxadmin.model.user">
+update user set
+uname=#{uname},upwd=#{upwd}
+where uno=#{uno}
+</update>
+</mapper>

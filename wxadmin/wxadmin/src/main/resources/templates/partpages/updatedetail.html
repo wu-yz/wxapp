@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" th:href="@{/layui/css/layui.css}"  media="all">
+  <script th:src="@{/layui/layui.js}" charset="utf-8"></script>
+</head>
+<body>
+  <!-- <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+  <legend>添加用户</legend>
+</fieldset> -->     
+<form class="layui-form" action="" id="form1">
+
+
+  
+  <div class="layui-form-item">
+    <label class="layui-form-label">题型</label>
+    <div class="layui-input-block">
+    	<input type="hidden" name="id" th:value="${pd.id}">
+    	<input type="text" name="type" th:value="${pd.type}" lay-verify="typenotnull" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">题目</label>
+    <div class="layui-input-block">
+      <textarea name="content" th:utext="${pd.content}" class="layui-textarea"></textarea>
+    </div>
+  </div>
+  
+    <div class="layui-form-item">
+      <label class="layui-form-label">答案</label>
+      <div class="layui-input-inline">
+        <input type="text" name="ans" th:value="${pd.ans}" lay-verify="option" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+    <label class="layui-form-label">A选项</label>
+    <div class="layui-input-block">
+      <input type="text" name="aoption" th:value="${pd.aoption}" lay-verify="option" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">B选项</label>
+    <div class="layui-input-block">
+      <input type="text" name="boption" th:value="${pd.boption}" lay-verify="option" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">C选项</label>
+    <div class="layui-input-block">
+      <input type="text" name="coption" th:value="${pd.coption}" lay-verify="option" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  
+  <div class="layui-form-item">
+    <label class="layui-form-label">D选项</label>
+    <div class="layui-input-block">
+      <input type="text" name="doption" th:value="${pd.doption}" lay-verify="option" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  
+<div class="layui-form-item">
+    <label class="layui-form-label">解析</label>
+    <div class="layui-input-block">
+      <textarea name="analysis" th:utext="${pd.analysis}" lay-verify="option" class="layui-textarea"></textarea>
+    </div>
+  </div>
+  
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button type="button" onclick="doSave()" class="layui-btn" lay-submit="" lay-filter="demo1">保存</button>
+    </div>
+  </div>
+</form>         
+<script>
+var $,layer;
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  $=layui.jquery;
+  layer=layui.layer;
+  //日期
+  laydate.render({
+    elem: '#date'
+  });
+  laydate.render({
+    elem: '#date1'
+  });
+  
+  //创建一个编辑器
+  var editIndex = layedit.build('LAY_demo_editor');
+ 
+  //自定义验证规则
+  form.verify({
+    option:function(value){
+    	if(value.length == 0){
+    		return '选项不能为空！';
+    	}
+    }
+    ,content: function(value){
+      layedit.sync(editIndex);
+    }
+
+  });
+  
+  //表单取值
+  layui.$('#LAY-component-form-getval').on('click', function(){
+    var data = form.val('example');
+    alert(JSON.stringify(data));
+    console.log(JSON.stringify(data));
+  });
+  
+});
+
+//点击提交事件
+function doSave(){
+	//发送post请求
+	//url:发送请求的地址，String类型
+	//data:发送给后台的数据，Json格式
+	//callback:请求成功后的回调函数
+	//type:第二个参数data的数据类型
+	var requestData=$("#form1").serialize();
+	$.post("/partpages/savedetail",requestData,function (responseData){
+		console.log(responseData);
+		if(responseData.success==1){
+			layer.alert("修改成功啦！",{yes:function(){
+				parent.layer.closeAll();
+			}});
+		}else{
+			layer.alert("失败！请重试");
+		}
+	});
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.tedu.wxadmin.mapper.VideoMapper">
+	<select id="findVideoCount" resultType="java.lang.Integer">
+		select count(*) from video;
+	</select>
+	<select id="findVideoList" resultType="com.tedu.wxadmin.model.video">
+		select * from video;
+	</select>
+	<select id="findVideoById" parameterType="java.lang.Integer" resultType="com.tedu.wxadmin.model.video">
+		select * from video where vid=#{vid};
+	</select>
+	<insert id="insertvideo" parameterType="com.tedu.wxadmin.model.video">
+	insert into video(vname,address) values(#{vname},#{address});
+	</insert>
+	<update id="updatevideo" parameterType="com.tedu.wxadmin.model.video">
+	update video set vname=#{vname},address=#{address}
+	where vid=#{vid}
+	</update>
+	<delete id="deleteByVid" parameterType="java.lang.Integer">
+		delete from video where vid=#{id};
+		alter table video AUTO_INCREMENT = 1;
+		 <!--对自增列进行重新排序
+		alter table video drop vid;
+     	alter table video ADD vid int NOT NULL first;
+     	alter table video MODIFY COLUMN vid int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(vid);
+		 -->    
+	</delete>
+	
+	
+	<!-- 根据id查地址 -->
+	<select id="findaddbyvid" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select address from video where vid=#{vid};
+	</select>
+</mapper>
